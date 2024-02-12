@@ -47,7 +47,7 @@ def process_dataset(queries, positives, negatives, num_docs_pr=10, max_num_pos_p
     return queries_pr, positives_pr, negatives_pr
 
 
-def load_relevance_scores_datasets_from_hf(hf_path):
+def load_relevance_scores_datasets_from_hf(hf_path, dump_path):
     dataset = load_dataset(hf_path)
     dataset_names_dict = {
         "scidocs-reranking": "SciDocs",
@@ -58,22 +58,26 @@ def load_relevance_scores_datasets_from_hf(hf_path):
         "Mmarco-reranking": "Mmarco",
     }
 
+    # create dump path
+    if not os.path.exists(dump_path):
+        os.makedirs(dump_path, exist_ok=True)
+
     for data in dataset["train"]:
         model_name = data["model_name"].split("/")[-1]
         dataset_path = data["dataset_path"].split("/")[-1]
+
+        if dataset_path not in dataset_names_dict.keys():
+            continue
 
         if model_name != "BAAI/bge-base-en":
             scores = np.array(data["scores"])
             targets = np.array(data["targets"])
 
-            try:
-                with open(f"rel_scores/{dataset_names_dict[dataset_path]}_{model_name}.json", "w") as json_file:
-                    json.dump({"scores": scores.tolist(), "targets": targets.tolist()}, json_file)
-            except:
-                pass
+            with open(os.path.join(dump_path, f"{dataset_names_dict[dataset_path]}_{model_name}.json"), "w") as json_file:
+                json.dump({"scores": scores.tolist(), "targets": targets.tolist()}, json_file)
 
 
-def load_relevance_scores_datasets_from_local(model_names, dataset_names, path="rel_scores/"):
+def load_relevance_scores_datasets_from_local(model_names, dataset_names, path):
     all_data = {}
 
     for model_name in model_names:
