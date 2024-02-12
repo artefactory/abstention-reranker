@@ -1,15 +1,12 @@
 import numpy as np
-from tqdm import tqdm
-
 import torch
 import torch.nn.functional as F
-
 from torch import Tensor
+from tqdm import tqdm
 
 
-def last_token_pool(last_hidden_states: Tensor,
-                 attention_mask: Tensor) -> Tensor:
-    left_padding = (attention_mask[:, -1].sum() == attention_mask.shape[0])
+def last_token_pool(last_hidden_states: Tensor, attention_mask: Tensor) -> Tensor:
+    left_padding = attention_mask[:, -1].sum() == attention_mask.shape[0]
     if left_padding:
         return last_hidden_states[:, -1]
     else:
@@ -34,18 +31,23 @@ def compute_document_mistral_scores(queries_pr, positives_pr, negatives_pr, mode
 
         # bs = 2
         for i in range(0, len(input_texts), 2):
-            batch_dict = tokenizer(input_texts[i:i+2], max_length=max_length - 1, return_attention_mask=False, padding=False,
-                                   truncation=True)
+            batch_dict = tokenizer(
+                input_texts[i : i + 2],
+                max_length=max_length - 1,
+                return_attention_mask=False,
+                padding=False,
+                truncation=True,
+            )
             # append eos_token_id to every input_ids
-            batch_dict['input_ids'] = [input_ids + [tokenizer.eos_token_id] for input_ids in batch_dict['input_ids']]
-            batch_dict = tokenizer.pad(batch_dict, padding=True, return_attention_mask=True, return_tensors='pt')
+            batch_dict["input_ids"] = [input_ids + [tokenizer.eos_token_id] for input_ids in batch_dict["input_ids"]]
+            batch_dict = tokenizer.pad(batch_dict, padding=True, return_attention_mask=True, return_tensors="pt")
             # cast to device
             batch_dict = {k: v.to(model.device) for k, v in batch_dict.items()}
 
             # outputs = model(**batch_dict, output_hidden_states=True)
             # embeddings = last_token_pool(outputs.hidden_states[-1], batch_dict['attention_mask'])
             outputs = model(**batch_dict)
-            embeddings = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
+            embeddings = last_token_pool(outputs.last_hidden_state, batch_dict["attention_mask"])
 
             # normalize embeddings
             embeddings = F.normalize(embeddings, p=2, dim=1)

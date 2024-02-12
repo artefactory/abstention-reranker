@@ -14,21 +14,19 @@ BIENCODERS = [
     "BAAI/bge-base-en-v1.5",
     "BAAI/llm-embedder",
     "intfloat/multilingual-e5-large",
-    'intfloat/multilingual-e5-small',
-    'intfloat/multilingual-e5-base',
+    "intfloat/multilingual-e5-small",
+    "intfloat/multilingual-e5-base",
     "intfloat/e5-small-v2",
     "intfloat/e5-large-v2",
     "intfloat/e5-base-v2",
-    "llmrails/ember-v1"
+    "llmrails/ember-v1",
 ]
 
 CUSTOM_BIENCODERS = [
     "jinaai/jina-embeddings-v2-base-en",
 ]
 
-MISTRAL_BIENCODERS = [
-    "intfloat/e5-mistral-7b-instruct"
-]
+MISTRAL_BIENCODERS = ["intfloat/e5-mistral-7b-instruct"]
 
 XENCODERS = [
     "cross-encoder/ms-marco-MiniLM-L-6-v2",
@@ -39,19 +37,16 @@ XENCODERS = [
     "cross-encoder/quora-distilroberta-base",
     "cross-encoder/nli-deberta-v3-xsmall",
     "cross-encoder/nli-MiniLM2-L6-H768",
-    ]
-
-CUSTOM_XENCODERS = [
-    "BAAI/bge-reranker-base",
-    "BAAI/bge-reranker-large"
 ]
 
+CUSTOM_XENCODERS = ["BAAI/bge-reranker-base", "BAAI/bge-reranker-large"]
+
 DATASETS = [
-    'mteb/scidocs-reranking',
-    'mteb/stackoverflowdupquestions-reranking',
+    "mteb/scidocs-reranking",
+    "mteb/stackoverflowdupquestions-reranking",
     "mteb/askubuntudupquestions-reranking",
     # # "mteb/mind_small" --> buggy,
-    ]
+]
 
 FRENCH_DATASETS = [
     "OrdalieTech/Ordalie-FR-Reranking-benchmark",
@@ -61,22 +56,20 @@ FRENCH_DATASETS = [
     # "sproos/mindsmall-fr"
 ]
 
-CHINESE_DATASETS = [
-    "C-MTEB/CMedQAv1-reranking",
-    "C-MTEB/Mmarco-reranking"
-]
+CHINESE_DATASETS = ["C-MTEB/CMedQAv1-reranking", "C-MTEB/Mmarco-reranking"]
 
 mistral_instructions = {
-    'mteb/askubuntudupquestions-reranking': 'Retrieve duplicate questions from AskUbuntu forum',
-    'mteb/mind_small': 'Retrieve relevant news articles based on user browsing history',
-    'mteb/scidocs-reranking': 'Given a title of a scientific paper, retrieve the titles of other relevant papers',
-    'mteb/stackoverflowdupquestions-reranking': 'Retrieve duplicate questions from StackOverflow forum',
+    "mteb/askubuntudupquestions-reranking": "Retrieve duplicate questions from AskUbuntu forum",
+    "mteb/mind_small": "Retrieve relevant news articles based on user browsing history",
+    "mteb/scidocs-reranking": "Given a title of a scientific paper, retrieve the titles of other relevant papers",
+    "mteb/stackoverflowdupquestions-reranking": "Retrieve duplicate questions from StackOverflow forum",
 }
 
 bge_llm_instructions = {
     "query": "Represent this query for retrieving relevant documents: ",
     "key": "Represent this document for retrieval: ",
 }
+
 
 def prefix_queries(queries, model_name, dataset_name=None):
     # return queries
