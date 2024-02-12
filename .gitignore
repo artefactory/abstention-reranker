@@ -9,6 +9,7 @@ todo.txt
 *.egg-info/
 models/
 data/
+rel_scores/
 .pytest_cache/
 .DS_Store
 # *.ipynb
