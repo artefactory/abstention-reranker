@@ -3,10 +3,10 @@ name = 'abstention-reranker'
 dynamic = ["version"]
 description = 'This repository centralizes and organizes dataset management for large language model training.'
 authors = [
-    { name = 'Manuel Faysse', email = 'manuel.faysse@illuin.tech' },
+    { name = 'Anonymous', email = 'anon@email.com' },
 ]
 maintainers = [
-    { name = 'Manuel Faysse', email = 'manuel.faysse@illuin.tech' },
+    { name = 'Anonymous', email = 'anon@email.com' },
 ]
 readme = 'README.md'
 requires-python = '>=3.9'
