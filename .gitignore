@@ -1,0 +1,19 @@
+__pycache__/
+checkpoint**
+*ckpt
+wandb
+test_data.json
+todo.txt
+*/logs.json
+.idea/
+*.egg-info/
+models/
+data/
+.pytest_cache/
+.DS_Store
+# *.ipynb
+*.ipynb_checkpoints
+stats/
+*/cachedir/
+*.json
+*.pdf
