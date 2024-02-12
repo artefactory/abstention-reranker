@@ -6,8 +6,8 @@ from scipy.stats import pearsonr
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import auc
 from sentence_transformers import SentenceTransformer, util
-from utils import load_reranking_dataset, process_dataset
-from abst_utils import AbstentionReranker, evaluate_instances, get_scorer_linreg
+from abstention_reranker.utils import load_reranking_dataset, process_dataset
+from abstention_reranker.abst_utils import AbstentionReranker, evaluate_instances, get_scorer_linreg
 
 
 def evaluate_oracle(metrics, abstention_rates):

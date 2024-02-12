@@ -1,7 +1,7 @@
 import numpy as np
 from sklearn.linear_model import Ridge, LogisticRegression
 from sklearn.metrics import average_precision_score, ndcg_score
-from utils import sort_scores
+from abstention_reranker.utils import sort_scores
 
 
 class AbstentionReranker:
