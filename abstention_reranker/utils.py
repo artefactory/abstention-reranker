@@ -1,3 +1,4 @@
+import os
 import json
 import numpy as np
 from datasets import load_dataset
@@ -39,8 +40,8 @@ def process_dataset(queries, positives, negatives, num_docs_pr=10, max_num_pos_p
     return queries_pr, positives_pr, negatives_pr
 
 
-def load_relevance_scores_datasets_from_hf():
-    dataset = load_dataset("manu/reranker-scores")
+def load_relevance_scores_datasets_from_hf(hf_path):
+    dataset = load_dataset(hf_path)
     dataset_names_dict = {'scidocs-reranking': 'SciDocs',
                           'askubuntudupquestions-reranking': 'AskUbuntu', 
                           'stackoverflowdupquestions-reranking': 'StackOverflow',  
@@ -63,14 +64,14 @@ def load_relevance_scores_datasets_from_hf():
                 pass
 
 
-def load_relevance_scores_datasets_from_local(model_names, dataset_names):
+def load_relevance_scores_datasets_from_local(model_names, dataset_names, path="rel_scores/"):
     all_data = {}
 
     for model_name in model_names:
         all_data[model_name] = {}
         
         for i, dataset_name in enumerate(dataset_names):
-            with open(f'rel_scores/{dataset_name}_{model_name}.json', 'r') as json_file:
+            with open(os.path.join(path, f'{dataset_name}_{model_name}.json'), 'r') as json_file:
                 scores_dataset_model = json.load(json_file)
 
             all_data[model_name][dataset_names[i]] = {'scores': np.array(scores_dataset_model['scores']),
