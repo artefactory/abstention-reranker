@@ -1,6 +1,6 @@
 # Abstention Reranker
 
-This repository contains the code for the ACL submission "Towards Trustworthy Reranking: A simple yet effective abstention mechanism".
+This repository contains the code for the ACL submission "Towards Trustworthy Reranking: A Simple yet Effective Abstention Mechanism".
 
 ## Abstract
 
@@ -10,6 +10,10 @@ Neural Information Retrieval (NIR) has significantly improved upon heuristic-bas
 ```python
 pip install -r requirements.txt
 ```
+
+## Experiment replication
+
+See `/notebooks/plots.ipynb`.
 
 ## Usage examples
 
