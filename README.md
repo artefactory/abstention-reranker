@@ -11,6 +11,13 @@ Neural Information Retrieval (NIR) has significantly improved upon heuristic-bas
 pip install -r requirements.txt
 ```
 
+## Computation of relevance scores
+
+Run
+```python 
+python scripts/run_on_datasets.py --config-path <path to config YML>
+```
+
 ## Experiment replication
 
 See `/notebooks/plots.ipynb`.
