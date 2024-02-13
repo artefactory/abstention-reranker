@@ -13,7 +13,6 @@ pip install -r requirements.txt
 
 ## Computation of relevance scores
 
-Run
 ```python 
 python scripts/run_on_datasets.py --config-path <path to config YML>
 ```
