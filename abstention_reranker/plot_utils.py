@@ -61,9 +61,9 @@ def plot_performance_vs_abstention(
         plt.savefig(path, bbox_inches="tight")
 
 
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
+# import matplotlib.pyplot as plt
+# import pandas as pd
+# import seaborn as sns
 
 
 def plot_abstention_vs_raw_performance(raw_perfs, naucs, metric, method, savefig=False, path=None):
@@ -209,3 +209,27 @@ def plot_linreg_coefficients(linreg_weights_analysis, model_name, dataset_names,
 
     if savefig:
         plt.savefig(path)
+
+
+def plot_runtime_comparison(runtime_study, savefig=False, path=None):
+        fontsize = 20
+        plt.rcParams["figure.figsize"] = [8, 2.2]
+        plt.rcParams["figure.autolayout"] = True
+        plt.rcParams['text.usetex'] = False
+        plt.rcParams['axes.facecolor'] = 'none'
+        plt.rcParams.update({'font.size': 16})
+
+        rel_sores_time = runtime_study.iloc[0,0]
+        conf_scores_time = runtime_study.iloc[0,1]
+        
+        b1 = plt.barh([""], [rel_sores_time], color="firebrick")
+        b2 = plt.barh([""], [conf_scores_time], left=[rel_sores_time], color="blue")
+
+        plt.legend([b1, b2], [r"$g_{\bf{\theta}}$", r"$u_{lin}$"], title="", fontsize=fontsize, ncol=2, bbox_to_anchor=(0.27, 1))
+        plt.xlabel("Avg. Runtime (ms)", fontsize=fontsize)
+        plt.xlim(-0.025, rel_sores_time + conf_scores_time + 0.025)
+       
+        if savefig:
+            plt.savefig(path, bbox_inches='tight')
+        
+        plt.show()
