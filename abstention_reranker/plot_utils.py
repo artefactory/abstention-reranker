@@ -61,11 +61,6 @@ def plot_performance_vs_abstention(
         plt.savefig(path, bbox_inches="tight")
 
 
-# import matplotlib.pyplot as plt
-# import pandas as pd
-# import seaborn as sns
-
-
 def plot_abstention_vs_raw_performance(raw_perfs, naucs, metric, method, savefig=False, path=None):
     model_names = list(raw_perfs.index)
     dataset_names = raw_perfs.columns.get_level_values(0).unique()
@@ -183,6 +178,31 @@ def plot_naucs_vs_qualification_threshold(
 
     if savefig:
         plt.savefig(path)
+
+
+def plot_linreg_coefficients(
+        linreg_weights_analysis, model_name, dataset_names, metric, savefig=False, path=None
+):
+    fontsize = 16
+    sns.set(style="white", palette="bright")
+    plt.figure(figsize=(7, 10))
+
+    for i, dataset_name in enumerate(dataset_names):    
+        coefs = linreg_weights_analysis[model_name][dataset_name]
+        
+        plt.subplot(3,2,i+1)
+        plt.bar(range(len(coefs[metric])), coefs[metric])
+
+        if i // 2 == 2:
+            plt.xlabel("Document", fontsize=fontsize)
+        if i % 2 == 0:
+            plt.ylabel("Coefficient Value", fontsize=fontsize)
+
+        sns.despine()
+        plt.tight_layout()
+
+        if savefig:
+            plt.savefig(path)
 
 
 def plot_runtime_comparison(runtime_study, savefig=False, path=None):
