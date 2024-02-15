@@ -185,32 +185,6 @@ def plot_naucs_vs_qualification_threshold(
         plt.savefig(path)
 
 
-def plot_linreg_coefficients(linreg_weights_analysis, model_name, dataset_names, metric, savefig=False, path=None):
-    sns.set(style="white", palette="bright")
-    plt.figure(figsize=(7, 10))
-    fontsize = 18
-
-    for i, dataset_name in enumerate(dataset_names):
-        plt.subplot(3, 2, i + 1)
-
-        linreg_weights = linreg_weights_analysis[model_name][dataset_name][metric]
-        plt.bar(np.arange(1, len(linreg_weights) + 1), linreg_weights, color="b")
-
-        if i // 2 == 2:
-            plt.xlabel("Document", fontsize=fontsize)
-        if i % 2 == 0:
-            plt.ylabel("Coefficient Value", fontsize=fontsize)
-
-        plt.xticks(range(1, len(linreg_weights) + 1))
-        plt.title(dataset_name, fontsize=fontsize)
-
-    sns.despine()
-    plt.tight_layout()
-
-    if savefig:
-        plt.savefig(path)
-
-
 def plot_runtime_comparison(runtime_study, savefig=False, path=None):
     fontsize = 20
     plt.rcParams["figure.figsize"] = [8, 2.2]
@@ -222,8 +196,8 @@ def plot_runtime_comparison(runtime_study, savefig=False, path=None):
     rel_sores_time = runtime_study.iloc[0,0]
     conf_scores_time = runtime_study.iloc[0,1]
     
-    b1 = plt.barh([""], [rel_sores_time], color="firebrick")
-    b2 = plt.barh([""], [conf_scores_time], left=[rel_sores_time], color="blue")
+    b1 = plt.barh([""], [rel_sores_time], color="gray", alpha=0.5)
+    b2 = plt.barh([""], [conf_scores_time], left=[rel_sores_time], color="blue", alpha=0.5)
 
     plt.legend([b1, b2], [r"$g_{\bf{\theta}}$", r"$u_{lin}$"], title="", fontsize=fontsize, ncol=2, bbox_to_anchor=(0.27, 1))
     plt.xlabel("Avg. Runtime (ms)", fontsize=fontsize)
