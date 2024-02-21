@@ -100,3 +100,9 @@ def sort_scores(scores, targets):
     sorted_scores = scores[np.arange(scores.shape[0])[:, None], sorted_indices]
     sorted_targets = targets[np.arange(targets.shape[0])[:, None], sorted_indices]
     return sorted_scores, sorted_targets
+
+
+def softmax(logits, temperature=1.0):
+    scaled_logits = logits / temperature
+    exp_logits = np.exp(scaled_logits - np.max(scaled_logits, axis=-1, keepdims=True))
+    return exp_logits / np.sum(exp_logits, axis=-1, keepdims=True)

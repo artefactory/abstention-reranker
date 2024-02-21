@@ -44,8 +44,9 @@ def evaluate_strategies_on_benchmark(
     random_seeds,
     test_size=0.2,
     alpha=0.1,
-    quantile_bad=0.25,
-    quantile_good=0.75,
+    quantile_bad=0.1,
+    quantile_good=0.9,
+    quantile_score=0,
     ref_subsample_size=None,
 ):
     strat_evals = {
@@ -62,15 +63,19 @@ def evaluate_strategies_on_benchmark(
         for model_name in model_names
     }
 
-    for model_name in model_names:
-        for dataset_name in dataset_names:
+    for i, model_name in enumerate(model_names):
+        print(f'[{i+1}/{len(model_names)}] {model_name}:')
+
+        for j, dataset_name in enumerate(dataset_names):
+            print(f'   - [{j+1}/{len(dataset_names)}] {dataset_name}:')
             rel_scores = all_data[model_name][dataset_name]["scores"]  # retrieve relevance scores
             targets = all_data[model_name][dataset_name]["targets"]  # retrieve targets
 
-            for metric in metric_names:
+            for k, metric in enumerate(metric_names):
+                print(f'      > [{k+1}/{len(metric_names)}] {metric}:')
                 metrics = evaluate_instances(rel_scores, targets, metric)  # compute metrics
 
-                for i, seed in enumerate(random_seeds):  # multiple runs (different seeds)
+                for l, seed in tqdm(list(enumerate(random_seeds))):  # multiple runs (different seeds)
                     rel_scores_ref, rel_scores_test, metrics_ref, metrics_test = train_test_split(
                         rel_scores, metrics, test_size=test_size, random_state=seed
                     )  # ref/test split
@@ -86,12 +91,12 @@ def evaluate_strategies_on_benchmark(
                         metrics_ref = metrics_ref[sampled_rows]
 
                     oracle_eval = evaluate_oracle(metrics_test, abstention_rates)  # evaluate oracle
-                    strat_evals[model_name][dataset_name][metric]["oracle"][i] = oracle_eval
-                    strat_evals[model_name][dataset_name][metric]["random"][i] = oracle_eval[0]
+                    strat_evals[model_name][dataset_name][metric]["oracle"][l] = oracle_eval
+                    strat_evals[model_name][dataset_name][metric]["random"][l] = oracle_eval[0]
 
                     for method in methods:  # evaluate methods
                         conf_scorer = AbstentionReranker(
-                            method, metric, alpha, quantile_bad, quantile_good
+                            method, metric, alpha, quantile_bad, quantile_good, quantile_score
                         )  # initialize confidence scorer
                         conf_scorer.get_scorer(rel_scores_ref, metrics_ref)  # fit scorer (when relevant)
                         conf_scores_test = conf_scorer.compute_confidence_scores(
@@ -100,7 +105,7 @@ def evaluate_strategies_on_benchmark(
                         strat_eval = evaluate_strategy(
                             conf_scores_test, metrics_test, abstention_rates
                         )  # evaluate strategy
-                        strat_evals[model_name][dataset_name][metric][method][i] = strat_eval
+                        strat_evals[model_name][dataset_name][metric][method][l] = strat_eval
 
     return strat_evals
 
@@ -180,8 +185,9 @@ def make_calibration_study(
     random_seeds,
     test_size=0.2,
     alpha=0.1,
-    quantile_bad=0.25,
-    quantile_good=0.75,
+    quantile_bad=0.1,
+    quantile_good=0.9,
+    quantile_score=0,
 ):
     thold_calibration_study = {method: np.zeros((len(random_seeds), len(abstention_rates))) for method in methods}
     perf_calibration_study = {method: np.zeros((len(random_seeds), len(abstention_rates))) for method in methods}
@@ -196,7 +202,7 @@ def make_calibration_study(
 
         for method in methods:
             conf_scorer = AbstentionReranker(
-                method, metric, alpha, quantile_bad, quantile_good
+                method, metric, alpha, quantile_bad, quantile_good, quantile_score
             )  # initialize confidence scorer
             conf_scorer.get_scorer(rel_scores_ref, metrics_ref)  # fit scorer (when relevant)
             conf_scores_ref = conf_scorer.compute_confidence_scores(
@@ -245,8 +251,9 @@ def make_ref_size_study(
     random_seeds,
     test_size=0.2,
     alpha=0.1,
-    quantile_bad=0.25,
-    quantile_good=0.75,
+    quantile_bad=0.1,
+    quantile_good=0.9,
+    quantile_score=0
 ):
     ref_subsample_sizes = np.array([0.5**k for k in range(10)])
     ref_size_study = {
@@ -269,6 +276,7 @@ def make_ref_size_study(
                 alpha,
                 quantile_bad,
                 quantile_good,
+                quantile_score,
                 size,
             )
             naucs = compute_naucs(strat_evals, abstention_rates, dataset_names, [model_name], [metric], methods)
@@ -341,8 +349,9 @@ def make_domain_adaptation_study(
     metric_names,
     methods,
     alpha=0.1,
-    quantile_bad=0.25,
-    quantile_good=0.75,
+    quantile_bad=0.1,
+    quantile_good=0.9,
+    quantile_score=0,
 ):
     dom_adap_study = []
 
@@ -374,7 +383,7 @@ def make_domain_adaptation_study(
                     )
 
                     for method in methods:
-                        conf_scorer = AbstentionReranker(method, metric, alpha, quantile_bad, quantile_good)
+                        conf_scorer = AbstentionReranker(method, metric, alpha, quantile_bad, quantile_good, quantile_score)
                         conf_scorer.get_scorer(rel_scores_ref, metrics_ref)
                         conf_scores_test = conf_scorer.compute_confidence_scores(rel_scores_test)
                         strat_eval = evaluate_strategy(conf_scores_test, metrics_test, abstention_rates)
@@ -401,6 +410,7 @@ def make_instance_qualification_study(
     random_seeds,
     test_size=0.2,
     alpha=0.1,
+    quantile_score=0,
 ):
     inst_qual_study = {
         model_name: {
@@ -429,6 +439,7 @@ def make_instance_qualification_study(
                 alpha,
                 quantile_bad,
                 quantile_good,
+                quantile_score,
                 None,
             )
             naucs_quantile = compute_naucs(

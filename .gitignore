@@ -17,3 +17,7 @@ stats/
 */cachedir/
 *.json
 *.pdf
+*.sh
+evals/
+*.out
+sb*
