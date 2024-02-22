@@ -24,3 +24,16 @@ See `/notebooks/plots.ipynb`.
 ## Usage examples
 
 See `/notebooks/implem.ipynb`.
+
+## Reference
+
+If you found our work useful, please consider citing:
+
+`@misc{gisserotboukhlef2024trustworthy,
+    title={Towards Trustworthy Reranking: A Simple yet Effective Abstention Mechanism}, 
+    author={Hippolyte Gisserot-Boukhlef and Manuel Faysse and Emmanuel Malherbe and Céline Hudelot and Pierre Colombo},
+    year={2024},
+    eprint={2402.12997},
+    archivePrefix={arXiv},
+    primaryClass={cs.IR}
+}`
