@@ -10,7 +10,7 @@ import torch
 parser = argparse.ArgumentParser()
 parser.add_argument("--num_docs_pr", type=int, default=10)
 parser.add_argument("--random_seed", type=int, default=42)
-parser.add_argument("--output_path", type=str, default="data/computed_scores/")
+parser.add_argument("--output_path", type=str, default="data_raw/")
 parser.add_argument("--config_path", type=str, default="scripts/configs/run_config.yaml")
 args = parser.parse_args()
 
@@ -56,40 +56,40 @@ for model_name in model_names:
 
         queries, positives, negatives = load_reranking_dataset(dataset_path)
 
-        # try it until it runs
-        i = 0
-        while i < num_docs_pr:
-            try:
-                queries, positives_pr, negatives_pr = process_dataset(queries, positives, negatives, num_docs_pr - i, max_num_pos_pr=5, random_seed=args.random_seed)
-                break
-            except Exception as e:
-                print("Failed, retrying with less docs", num_docs_pr - i)
-                i += 1
-                print(e)
-        if i == num_docs_pr:
-            print("Failed, skipping")
-            continue
+        # # try it until it runs
+        # i = 0
+        # while i < num_docs_pr:
+        #     try:
+        #         queries, positives, negatives = process_dataset(queries, positives, negatives, num_docs_pr - i, max_num_pos_pr=5, random_seed=args.random_seed)
+        #         break
+        #     except Exception as e:
+        #         print("Failed, retrying with less docs", num_docs_pr - i)
+        #         i += 1
+        #         print(e)
+        # if i == num_docs_pr:
+        #     print("Failed, skipping")
+        #     continue
 
         try:
             if model_name in XENCODERS:
                 scores, targets = compute_document_scores_xencoder(prefix_queries(queries, model_name, dataset_path),
-                                                                   prefix_docs(positives_pr, model_name),
-                                                                   prefix_docs(negatives_pr, model_name),
+                                                                   prefix_docs(positives, model_name),
+                                                                   prefix_docs(negatives, model_name),
                                                                    model=model)
             elif model_name in BIENCODERS:
                 scores, targets = compute_document_scores(prefix_queries(queries, model_name, dataset_path),
-                                                          prefix_docs(positives_pr, model_name),
-                                                          prefix_docs(negatives_pr, model_name),
+                                                          prefix_docs(positives, model_name),
+                                                          prefix_docs(negatives, model_name),
                                                           model=model)
             elif model_name in CUSTOM_XENCODERS:
                 scores, targets = compute_document_scores_custom_xencoder(prefix_queries(queries, model_name, dataset_path),
-                                                                          prefix_docs(positives_pr, model_name),
-                                                                          prefix_docs(negatives_pr, model_name),
+                                                                          prefix_docs(positives, model_name),
+                                                                          prefix_docs(negatives, model_name),
                                                                           model=model, tokenizer=tokenizer)
             elif model_name in MISTRAL_BIENCODERS:
                 scores, targets = compute_document_mistral_scores(prefix_queries(queries, model_name, dataset_path),
-                                                                  prefix_docs(positives_pr, model_name),
-                                                                  prefix_docs(negatives_pr, model_name),
+                                                                  prefix_docs(positives, model_name),
+                                                                  prefix_docs(negatives, model_name),
                                                                   model=model, tokenizer=tokenizer)
             else:
                 raise NotImplementedError
@@ -100,13 +100,13 @@ for model_name in model_names:
 
         # save in dict
         scores_dict = {
-            "model_name": model_name,
-            "dataset_path": dataset_path,
-            "num_docs_pr": num_docs_pr - i,
-            "random_seed": 42,
-            "queries": queries,
-            "positives": positives_pr,
-            "negatives": negatives_pr,
+            #"model_name": model_name,
+            #"dataset_path": dataset_path,
+            #"num_docs_pr": num_docs_pr - i,
+            #"random_seed": 42,
+            #"queries": queries,
+            #"positives": positives,
+            #"negatives": negatives,
             "scores": scores.tolist(),       # unsorted
             "targets": targets.tolist(),     # unsorted
         }

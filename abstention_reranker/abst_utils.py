@@ -7,13 +7,13 @@ from abstention_reranker.utils import sort_scores
 
 
 class AbstentionReranker:
-    def __init__(self, method, metric, alpha=0.1, quantile_bad=0.1, quantile_good=0.9, quantile_score=0):
+    def __init__(self, method, metric, alpha=0.1, quantile_bad=0.1, quantile_good=0.9, quantile_wass=0):
         self.method = method
         self.metric = metric
         self.alpha = alpha
         self.quantile_bad = quantile_bad
         self.quantile_good = quantile_good
-        self.quantile_score = quantile_score
+        self.quantile_wass = quantile_wass
 
     def evaluate_instances(self, relevance_scores_ref, targets_ref):
         self.relevance_scores_ref = relevance_scores_ref
@@ -48,7 +48,7 @@ class AbstentionReranker:
         
         elif self.method == "wasserstein":
             self.scorer = get_scorer_wass(
-                self.relevance_scores_ref, self.metrics_ref, self.quantile_bad, self.quantile_good, self.quantile_score
+                self.relevance_scores_ref, self.metrics_ref, self.quantile_bad, self.quantile_good, self.quantile_wass
             )
 
     def compute_confidence_scores(self, relevance_scores):
@@ -141,23 +141,18 @@ def get_scorer_mah(relevance_scores_ref, metrics_ref, quantile_bad, quantile_goo
     return scorer
 
 
-def get_scorer_wass(relevance_scores_ref, metrics_ref, quantile_bad, quantile_good, quantile_score):
-    sorted_scores_ref = np.sort(relevance_scores_ref, axis=1)
+def get_scorer_wass(relevance_scores_ref, metrics_ref, quantile_bad, quantile_good, quantile_wass):
+    sorted_scores_ref = np.sort(relevance_scores_ref, axis=1)[:, ::-1]
     metrics_argsort = np.argsort(metrics_ref)
     relevance_scores_ref_bad = sorted_scores_ref[metrics_argsort[:round(len(metrics_ref) * quantile_bad)]]
     relevance_scores_ref_good = sorted_scores_ref[metrics_argsort[round(len(metrics_ref) * quantile_good):]]
 
     def scorer(relevance_scores):
-        sorted_scores = np.sort(relevance_scores, axis=1)
-        conf_scores = []
-        
-        for sorted_scores_inst in sorted_scores:
-            dist_to_bad = compute_wass_score(relevance_scores_ref_bad, sorted_scores_inst, quantile_score)
-            dist_to_good = compute_wass_score(relevance_scores_ref_good, sorted_scores_inst, quantile_score)
-            conf_scores.append(dist_to_bad - dist_to_good)
-        
-        return np.array(conf_scores)
-
+        sorted_scores = np.sort(relevance_scores, axis=1)[:, ::-1]
+        conf_scores = compute_wass_scores(relevance_scores_ref_bad, sorted_scores, quantile_wass) \
+            - compute_wass_scores(relevance_scores_ref_good, sorted_scores, quantile_wass)
+        return conf_scores
+    
     return scorer
 
 
@@ -178,32 +173,17 @@ class MahalanobisDistance:
         return np.array([np.sqrt(np.dot(np.dot(d, self.ref_inv_cov), d.T)) for d in diff])
     
 
-def compute_wass_distance(u, v):
-    M = ot.dist(
-        x1 = np.expand_dims(range(u.shape[0]), axis=1), 
-        x2 = np.expand_dims(range(v.shape[0]), axis=1), 
-        metric="minkowski", 
-        p=1
-    )
-    wass_dist = ot.emd(a=u, b=v, M=M, log=True)[1]["cost"]    
-
-    return wass_dist
+def compute_wass_distances(reference_set, test_set):
+    reference_set_cdf = reference_set.cumsum(axis=1)
+    test_set_cdf = test_set.cumsum(axis=1)
+    wass_distances = np.absolute(reference_set_cdf[:, np.newaxis] - np.repeat(test_set_cdf[np.newaxis], reference_set_cdf.shape[0], axis=0)).sum(axis=-1)
+    return wass_distances
 
 
-def compute_wass_score(reference_set, u, q=0):
-    wass_dists = []
-
-    for v in reference_set:
-        wass_dists.append(compute_wass_distance(u, v))
-    
-    if q == 0:
-        wass_score = min(wass_dists)
-    elif q == 1:
-        wass_score = np.mean(wass_dists)
-    else:
-        wass_score = np.mean(sorted(wass_dists)[:max(1,round(q*len(wass_dists)))])
-    
-    return wass_score
+def compute_wass_scores(reference_set, test_set, q=0):
+    wass_distances = compute_wass_distances(reference_set, test_set)
+    wass_scores = np.sort(wass_distances, axis=0)[:max(1, round(q * wass_distances.shape[0]))].mean(axis=0)
+    return wass_scores
 
 
 def evaluate_instances(relevance_scores, targets, metric):
