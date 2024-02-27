@@ -8,6 +8,7 @@ from abstention_reranker.utils import sort_scores
 class AbstentionReranker:
     def __init__(self, method, metric, alpha=0.1, quantile_bad=0.25, quantile_good=0.75):
         self.method = method
+        self.scorer = get_scorer(self.method, alpha)
         self.metric = metric
         self.alpha = alpha
         self.quantile_bad = quantile_bad
@@ -17,35 +18,27 @@ class AbstentionReranker:
         self.relevance_scores_ref = relevance_scores_ref
         self.metrics_ref = evaluate_instances(relevance_scores_ref, targets_ref, self.metric)
 
-    def get_scorer(self, relevance_scores_ref=None, metrics_ref=None):
-        if (relevance_scores_ref is not None) and (metrics_ref is not None):
-            self.relevance_scores_ref = relevance_scores_ref
-            self.metrics_ref = metrics_ref
+    def fit_scorer(self, relevance_scores_ref=None, metrics_ref=None):
 
-        if self.method == "max":
-            self.scorer = get_scorer_max()
+        if self.method not in ("max", "std", "1-2"):
+            
+	    if (relevance_scores_ref is not None) and (metrics_ref is not None):
+	        self.relevance_scores_ref = relevance_scores_ref
+	        self.metrics_ref = metrics_ref
 
-        elif self.method == "std":
-            self.scorer = get_scorer_std()
+            if self.method in ("linreg", "logreg"):
+                sorted_scores_ref = np.sort(self.relevance_scores_ref, axis=1)
+                #todo: add preprocessing for logreg
+                self.scorer.fit(sorted_scores_ref)
 
-        elif self.method == "1-2":
-            self.scorer = get_scorer_1_minus_2()
-
-        elif self.method == "linreg":
-            self.scorer = get_scorer_linreg(self.relevance_scores_ref, self.metrics_ref, self.alpha)
-
-        elif self.method == "logreg":
-            self.scorer = get_scorer_logreg(
-                self.relevance_scores_ref, self.metrics_ref, self.alpha, self.quantile_bad, self.quantile_good
-            )
-
-        elif self.method == "mahalanobis":
-            self.scorer = get_scorer_mah(
-                self.relevance_scores_ref, self.metrics_ref, self.quantile_bad, self.quantile_good
-            )
+	    elif self.method == "mahalanobis":
+	        self.scorer = get_scorer_mah(
+	            self.relevance_scores_ref, self.metrics_ref, self.quantile_bad, self.quantile_good
+		)
 
     def compute_confidence_scores(self, relevance_scores):
-        self.confidence_scores = self.scorer(relevance_scores)
+        sorted_scores = np.sort(relevance_scores, axis=1)
+        self.confidence_scores = self.scorer.predict(sorted_scores)
         return self.confidence_scores
 
     def rank_with_abstention(self, relevance_scores_test, target, target_type="abstention"):
@@ -64,35 +57,32 @@ class AbstentionReranker:
         return abst_decisions
 
 
-def get_scorer_max():
-    return lambda relevance_scores: relevance_scores.max(axis=1)
-
-
-def get_scorer_std():
-    return lambda relevance_scores: relevance_scores.std(axis=1)
-
-
-def get_scorer_1_minus_2():
-    def scorer(relevance_scores):
+def get_scorer(method, alpha):
+    def scorer_1_2(relevance_scores):
         sorted_scores = np.sort(relevance_scores, axis=1)
         return sorted_scores[:, -1] - sorted_scores[:, -2]
 
-    return scorer
+    dict(
+	"max": lambda relevance_scores: relevance_scores.max(axis=1),
+        "std": lambda relevance_scores: relevance_scores.std(axis=1),
+        "1-2": scorer_1_2,
+        "linreg": Ridge(alpha=alpha),
+        "logreg": TriclassLogreg(C=1 / alpha),
+    )
+
+    return scorer_by_name[name]
 
 
 def get_scorer_linreg(relevance_scores_ref, metrics_ref, alpha=0.1, return_coefs=False):
     sorted_scores = np.sort(relevance_scores_ref, axis=1)
-    reg = Ridge(alpha=alpha)
     reg.fit(sorted_scores, metrics_ref)
 
-    def scorer(relevance_scores):
-        sorted_scores = np.sort(relevance_scores, axis=1)
-        return reg.predict(sorted_scores)
 
-    if return_coefs:
-        return scorer, reg.coef_
-    else:
-        return scorer
+Class TriclassLogreg(LogisticRegresstion):
+
+    def predict(self, scores):
+        probas = super(self).predict_proba(scores)
+        return probas[:, 2] - probas[:, 0]
 
 
 def get_scorer_logreg(relevance_scores_ref, metrics_ref, alpha, quantile_bad, quantile_good, return_coefs=False):
@@ -101,18 +91,8 @@ def get_scorer_logreg(relevance_scores_ref, metrics_ref, alpha, quantile_bad, qu
     metrics_argsort = np.argsort(metrics_ref)
     metric_classes[metrics_argsort[: round(len(metrics_ref) * quantile_bad)]] = -1
     metric_classes[metrics_argsort[round(len(metrics_ref) * quantile_good) :]] = 1
-    clf = LogisticRegression(C=1 / alpha)
+
     clf.fit(sorted_scores_ref, metric_classes)
-
-    def scorer(relevance_scores):
-        sorted_scores = np.sort(relevance_scores, axis=1)
-        probas = clf.predict_proba(sorted_scores)
-        return probas[:, 2] - probas[:, 0]
-
-    if return_coefs:
-        return scorer, clf.coef_
-    else:
-        return scorer
 
 
 def get_scorer_mah(relevance_scores_ref, metrics_ref, quantile_bad, quantile_good):
