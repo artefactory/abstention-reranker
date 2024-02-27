@@ -1,7 +1,6 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression, Ridge
 from sklearn.metrics import average_precision_score, ndcg_score
-import ot
 
 from abstention_reranker.utils import sort_scores
 
