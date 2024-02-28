@@ -6,7 +6,8 @@ def compute_document_scores_xencoder(queries, positives_pr, negatives_pr, model)
 
     num_instances = len(queries)
     num_docs_pr = len(positives_pr[0]) + len(negatives_pr[0])
-    scores, targets = np.zeros((num_instances, num_docs_pr)), np.zeros((num_instances, num_docs_pr))
+    #scores, targets = np.zeros((num_instances, num_docs_pr)), np.zeros((num_instances, num_docs_pr))
+    scores, targets = [], []
 
     def encode_sample_xencoder(query, positive, negative):
         # model_name is for caching

@@ -36,7 +36,7 @@ for model_name in model_names:
     elif model_name in CUSTOM_XENCODERS :
         from transformers import AutoTokenizer, AutoModelForSequenceClassification
         tokenizer = AutoTokenizer.from_pretrained(model_name)
-        model = AutoModelForSequenceClassification.from_pretrained(model_name, device=torch.device("cuda"))
+        model = AutoModelForSequenceClassification.from_pretrained(model_name) #, device=torch.device("cuda"))
     elif model_name in MISTRAL_BIENCODERS:
         from transformers import AutoTokenizer, AutoModel
         tokenizer = AutoTokenizer.from_pretrained(model_name)
