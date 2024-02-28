@@ -35,10 +35,10 @@ datasets:
   - 'mteb/stackoverflowdupquestions-reranking'
   - "mteb/askubuntudupquestions-reranking"
   # french
-  - "OrdalieTech/Ordalie-FR-Reranking-benchmark"
+  # - "OrdalieTech/Ordalie-FR-Reranking-benchmark"
   - "lyon-nlp/mteb-fr-reranking-alloprof-s2p"
   # - "lyon-nlp/mteb-fr-reranking-syntec-s2p"
-  - "OrdalieTech/MIRACL-FR-Reranking-benchmark"
+  # - "OrdalieTech/MIRACL-FR-Reranking-benchmark"
   # - "sproos/mindsmall-fr"
   # chinese
   - "C-MTEB/CMedQAv1-reranking"

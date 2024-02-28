@@ -15,9 +15,13 @@ def compute_document_scores_xencoder(queries, positives_pr, negatives_pr, model)
         # if multiple heads - assume head 0 is the one we want
         if len(scores_instance.shape) > 1 and scores_instance.shape[1] > 1:
             scores_instance = scores_instance[:, 0]
-        return scores_instance, np.array([1] * len(positive) + [0] * len(negative))
+        #return scores_instance, np.array([1] * len(positive) + [0] * len(negative))
+        return scores_instance.tolist(), [1] * len(positive) + [0] * len(negative)
 
     for i, (query, positive, negative) in tqdm(list(enumerate(zip(queries, positives_pr, negatives_pr)))):
-        scores[i], targets[i] = encode_sample_xencoder(query, positive, negative)
+        #scores[i], targets[i] = encode_sample_xencoder(query, positive, negative)
+        sc, tgt = encode_sample_xencoder(query, positive, negative)
+        scores.append(sc)
+        targets.append(tgt)
 
     return scores, targets

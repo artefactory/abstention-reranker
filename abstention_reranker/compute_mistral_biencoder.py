@@ -58,11 +58,15 @@ def compute_document_mistral_scores(queries_pr, positives_pr, negatives_pr, mode
         print(scores.tolist())
 
         # scores to numpy
-        scores_instance = scores.numpy()
+        #scores_instance = scores.numpy()
 
-        return scores_instance, np.array([1] * len(positive) + [0] * len(negative))
+        #return scores_instance, np.array([1] * len(positive) + [0] * len(negative))
+        return scores.tolist(), [1] * len(positive) + [0] * len(negative)
 
     for i, (query, positive, negative) in tqdm(list(enumerate(zip(queries_pr, positives_pr, negatives_pr)))):
-        scores[i], targets[i] = encode_sample(query, positive, negative)
+        #scores[i], targets[i] = encode_sample(query, positive, negative)
+        sc, tgt = encode_sample(query, positive, negative)
+        scores.append(sc)
+        targets.append(tgt)
 
     return scores, targets

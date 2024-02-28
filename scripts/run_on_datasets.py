@@ -107,8 +107,10 @@ for model_name in model_names:
             #"queries": queries,
             #"positives": positives,
             #"negatives": negatives,
-            "scores": scores.tolist(),       # unsorted
-            "targets": targets.tolist(),     # unsorted
+            #"scores": scores.tolist(),       # unsorted
+            #"targets": targets.tolist(),     # unsorted
+            "scores": scores,
+            "targets": targets,
         }
 
         # save as json
