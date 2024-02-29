@@ -14,17 +14,19 @@ def compute_document_scores_custom_xencoder(queries, positives_pr, negatives_pr,
     def encode_sample_xencoder(query, positive, negative):
         # model_name is for caching
         pairs = [[query, doc] for doc in (positive + negative)]
+        
         with torch.no_grad():
-            inputs = tokenizer(pairs, padding=True, truncation=True, return_tensors="pt", max_length=512).to(device)
-            scores_instance = (
-                model(**inputs, return_dict=True)
-                .logits.view(
-                    -1,
-                )
-                .float()
-                #.numpy()
-                .tolist()
-            )
+            try:
+                inputs = tokenizer(pairs, padding=True, truncation=True, return_tensors="pt", max_length=512).to(device)
+                #scores_instance = model(**inputs, return_dict=True).logits.view(-1,).float().numpy()
+                scores_instance = model(**inputs, return_dict=True).logits.view(-1,).float().tolist()
+            except:
+                scores_instance = []
+                for pair in pairs:
+                    inputs = tokenizer([pair], padding=True, truncation=True, return_tensors="pt", max_length=512).to(device)
+                    #scores_instance = model(**inputs, return_dict=True).logits.view(-1,).float().numpy()
+                    scores_instance.append(model(**inputs, return_dict=True).logits.view(-1,).float().tolist()[0])
+
         # scores_instance_argsort = np.argsort(scores_instance)
         #return scores_instance, np.array([1] * len(positive) + [0] * len(negative))
         return scores_instance, [1] * len(positive) + [0] * len(negative)

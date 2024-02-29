@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from sentence_transformers import SentenceTransformer, util
 from tqdm import tqdm
 
@@ -14,7 +15,16 @@ def compute_document_scores(queries_pr, positives_pr, negatives_pr, model, devic
     def encode_sample(query, positive, negative):
         # model_name is for caching
         query_emb = model.encode(query).reshape(1, -1)
-        doc_emb = model.encode([doc for doc in (positive + negative)], normalize_embeddings=True)
+        
+        with torch.no_grad():
+            try:
+                doc_emb = model.encode([doc for doc in (positive + negative)], normalize_embeddings=True)
+            except:
+                doc_emb = []
+                for doc in positive + negative:
+                    doc_emb.append(model.encode([doc]))
+                doc_emb = np.concatenate(doc_emb, axis=0)
+        
         # compute dot score and cast to numpy
         #scores_instance = util.cos_sim(query_emb, doc_emb)[0].numpy()
         scores_instance = util.cos_sim(query_emb, doc_emb)[0].tolist()
