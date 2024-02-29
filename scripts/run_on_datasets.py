@@ -70,27 +70,38 @@ for model_name in model_names:
         #     print("Failed, skipping")
         #     continue
 
+        if torch.cuda.is_available():
+            device = 'cuda'
+        else:
+            device = 'cpu'
+
         try:
             if model_name in XENCODERS:
                 scores, targets = compute_document_scores_xencoder(prefix_queries(queries, model_name, dataset_path),
                                                                    prefix_docs(positives, model_name),
                                                                    prefix_docs(negatives, model_name),
-                                                                   model=model)
+                                                                   model=model,
+                                                                   device=device)
             elif model_name in BIENCODERS:
                 scores, targets = compute_document_scores(prefix_queries(queries, model_name, dataset_path),
                                                           prefix_docs(positives, model_name),
                                                           prefix_docs(negatives, model_name),
-                                                          model=model)
+                                                          model=model,
+                                                          device=device)
             elif model_name in CUSTOM_XENCODERS:
                 scores, targets = compute_document_scores_custom_xencoder(prefix_queries(queries, model_name, dataset_path),
                                                                           prefix_docs(positives, model_name),
                                                                           prefix_docs(negatives, model_name),
-                                                                          model=model, tokenizer=tokenizer)
+                                                                          model=model,
+                                                                          tokenizer=tokenizer,
+                                                                          device=device)
             elif model_name in MISTRAL_BIENCODERS:
                 scores, targets = compute_document_mistral_scores(prefix_queries(queries, model_name, dataset_path),
                                                                   prefix_docs(positives, model_name),
                                                                   prefix_docs(negatives, model_name),
-                                                                  model=model, tokenizer=tokenizer)
+                                                                  model=model,
+                                                                  tokenizer=tokenizer,
+                                                                  device=device)
             else:
                 raise NotImplementedError
         except Exception as e:
