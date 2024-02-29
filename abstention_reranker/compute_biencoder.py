@@ -3,10 +3,11 @@ from sentence_transformers import SentenceTransformer, util
 from tqdm import tqdm
 
 
-def compute_document_scores(queries_pr, positives_pr, negatives_pr, model):
+def compute_document_scores(queries_pr, positives_pr, negatives_pr, model, device):
 
     num_instances = len(queries_pr)
     num_docs_pr = len(positives_pr[0]) + len(negatives_pr[0])
+    model = model.to(device)
     #scores, targets = np.zeros((num_instances, num_docs_pr)), np.zeros((num_instances, num_docs_pr))
     scores, targets = [], []
 

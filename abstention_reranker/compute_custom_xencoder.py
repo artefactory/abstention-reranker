@@ -3,10 +3,11 @@ import torch
 from tqdm import tqdm
 
 
-def compute_document_scores_custom_xencoder(queries, positives_pr, negatives_pr, model, tokenizer):
+def compute_document_scores_custom_xencoder(queries, positives_pr, negatives_pr, model, tokenizer, device):
     model.eval()
     num_instances = len(queries)
     num_docs_pr = len(positives_pr[0]) + len(negatives_pr[0])
+    model = model.to(device)
     #scores, targets = np.zeros((num_instances, num_docs_pr)), np.zeros((num_instances, num_docs_pr))
     scores, targets = [], []
 
@@ -14,7 +15,7 @@ def compute_document_scores_custom_xencoder(queries, positives_pr, negatives_pr,
         # model_name is for caching
         pairs = [[query, doc] for doc in (positive + negative)]
         with torch.no_grad():
-            inputs = tokenizer(pairs, padding=True, truncation=True, return_tensors="pt", max_length=512)
+            inputs = tokenizer(pairs, padding=True, truncation=True, return_tensors="pt", max_length=512).to(device)
             scores_instance = (
                 model(**inputs, return_dict=True)
                 .logits.view(
