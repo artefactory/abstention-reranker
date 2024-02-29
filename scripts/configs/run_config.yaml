@@ -23,8 +23,8 @@ models:
   - "cross-encoder/stsb-TinyBERT-L-4"
   - "cross-encoder/stsb-distilroberta-base"
   - "cross-encoder/quora-distilroberta-base"
-  - "cross-encoder/nli-deberta-v3-xsmall"
-  - "cross-encoder/nli-MiniLM2-L6-H768"
+  # - "cross-encoder/nli-deberta-v3-xsmall"
+  # - "cross-encoder/nli-MiniLM2-L6-H768"
   - "BAAI/bge-reranker-base"
   - "BAAI/bge-reranker-large"
 
