@@ -27,6 +27,9 @@ class AbstentionReranker:
         if self.method == "max":
             self.scorer = get_scorer_max()
 
+        if self.method == "mean":
+            self.scorer = get_scorer_mean()
+
         elif self.method == "std":
             self.scorer = get_scorer_std()
 
@@ -73,6 +76,10 @@ class AbstentionReranker:
 
 def get_scorer_max():
     return lambda relevance_scores: relevance_scores.max(axis=1)
+
+
+def get_scorer_mean():
+    return lambda relevance_scores: relevance_scores.mean(axis=1)
 
 
 def get_scorer_std():
