@@ -1,6 +1,6 @@
 # Abstention Reranker
 
-This repository contains the code for the ACL submission "[Towards Trustworthy Reranking: A Simple yet Effective Abstention Mechanism](https://arxiv.org/pdf/2402.12997.pdf)".
+Reference article: "[Towards Trustworthy Reranking: A Simple yet Effective Abstention Mechanism](https://arxiv.org/pdf/2402.12997.pdf)".
 
 ## Abstract
 
