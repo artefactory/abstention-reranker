@@ -106,3 +106,7 @@ def softmax(logits, temperature=1.0):
     scaled_logits = logits / temperature
     exp_logits = np.exp(scaled_logits - np.max(scaled_logits, axis=-1, keepdims=True))
     return exp_logits / np.sum(exp_logits, axis=-1, keepdims=True)
+
+
+def flatten_list(list_of_lists):
+    return [elt for list in list_of_lists for elt in list]
