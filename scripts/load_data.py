@@ -61,6 +61,8 @@ models = {
 
 for lang in datasets.keys():
     for dat in datasets[lang]:
+        print(dat)
+
         # Load dataset
         dataset = load_dataset(dat)
         try:
@@ -72,6 +74,8 @@ for lang in datasets.keys():
         targets = [[1] * len(pos) + [0] * len(neg) for pos, neg in zip(dataset['positive'], dataset['negative'])]
         
         for mod in models['ml'] + models[lang]:
+            print('   -> ', mod)
+            
             # Initialize embeddings dataset
             dataset_encs = {'query': [], 'documents': [], 'target': targets}
             
