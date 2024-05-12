@@ -46,6 +46,9 @@ def evaluate_strategies_on_benchmark(
     alpha=0.1,
     quantile_bad=0.25,
     quantile_good=0.75,
+    num_iter=100,
+    batch_size='full',
+    learning_rate=0.1,
     ref_subsample_size=None,
 ):
     strat_evals = {
@@ -91,7 +94,7 @@ def evaluate_strategies_on_benchmark(
 
                     for method in methods:  # evaluate methods
                         conf_scorer = AbstentionReranker(
-                            method, metric, alpha, quantile_bad, quantile_good
+                            method, metric, alpha, quantile_bad, quantile_good, num_iter, batch_size, learning_rate, seed
                         )  # initialize confidence scorer
                         conf_scorer.get_scorer(rel_scores_ref, metrics_ref)  # fit scorer (when relevant)
                         conf_scores_test = conf_scorer.compute_confidence_scores(
@@ -182,6 +185,9 @@ def make_calibration_study(
     alpha=0.1,
     quantile_bad=0.25,
     quantile_good=0.75,
+    num_iter=100, 
+    batch_size='full', 
+    learning_rate=0.1
 ):
     thold_calibration_study = {method: np.zeros((len(random_seeds), len(abstention_rates))) for method in methods}
     perf_calibration_study = {method: np.zeros((len(random_seeds), len(abstention_rates))) for method in methods}
@@ -196,7 +202,7 @@ def make_calibration_study(
 
         for method in methods:
             conf_scorer = AbstentionReranker(
-                method, metric, alpha, quantile_bad, quantile_good
+                method, metric, alpha, quantile_bad, quantile_good, num_iter, batch_size, learning_rate, seed
             )  # initialize confidence scorer
             conf_scorer.get_scorer(rel_scores_ref, metrics_ref)  # fit scorer (when relevant)
             conf_scores_ref = conf_scorer.compute_confidence_scores(
@@ -343,6 +349,10 @@ def make_domain_adaptation_study(
     alpha=0.1,
     quantile_bad=0.25,
     quantile_good=0.75,
+    num_iter=100, 
+    batch_size=100, 
+    learning_rate=0.1,
+    seed=0
 ):
     dom_adap_study = []
 
@@ -374,7 +384,9 @@ def make_domain_adaptation_study(
                     )
 
                     for method in methods:
-                        conf_scorer = AbstentionReranker(method, metric, alpha, quantile_bad, quantile_good)
+                        conf_scorer = AbstentionReranker(
+                            method, metric, alpha, quantile_bad, quantile_good, num_iter, batch_size, learning_rate, seed
+                        )
                         conf_scorer.get_scorer(rel_scores_ref, metrics_ref)
                         conf_scores_test = conf_scorer.compute_confidence_scores(rel_scores_test)
                         strat_eval = evaluate_strategy(conf_scores_test, metrics_test, abstention_rates)

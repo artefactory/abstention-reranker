@@ -8,10 +8,20 @@ colors_dict = {
     "std": "red",
     "1-2": "green",
     "linreg": "blue",
+    "rf": "darkgreen",
     "logreg": "purple",
     "mahalanobis": "black",
 }
-markers_dict = {"max": "o", "std": "o", "1-2": "o", "linreg": "d", "ridge": "d", "logreg": "d", "mahalanobis": "d"}
+markers_dict = {
+    "max": "o", 
+    "std": "o", 
+    "1-2": "o", 
+    "linreg": "d", 
+    "ridge": "d", 
+    "rf": "d",
+    "logreg": "d", 
+    "mahalanobis": "d"
+}
 
 
 def plot_performance_vs_abstention(
