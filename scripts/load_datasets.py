@@ -1,8 +1,5 @@
-import json
 from tqdm import tqdm
-import numpy as np
-import matplotlib.pyplot as plt
-from datasets import load_dataset, Dataset, DatasetDict
+from datasets import load_dataset, Dataset
 from sentence_transformers import SentenceTransformer
 import warnings
 warnings.filterwarnings("ignore")
@@ -94,4 +91,5 @@ for lang in datasets.keys():
             # Push dataset to hub
             dat_name = dataset_short_names[dat]
             mod_name = mod.split('/')[1]
+            dataset_encs = Dataset.from_dict(dataset_encs)
             dataset_encs.push_to_hub(f'hgissbkh/{dat_name}-{mod_name}-reranking')
