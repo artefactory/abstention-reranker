@@ -1,12 +1,10 @@
-import os 
-DIR_PATH = os.path.dirname(os.path.realpath('__file__'))
-import sys
-sys.path.append(DIR_PATH)
+# import os 
+# DIR_PATH = os.path.dirname(os.path.realpath('__file__'))
+# import sys
+# sys.path.append(DIR_PATH)
 import numpy as np
-from abstention_reranker.utils import *
-from abstention_reranker.abst_utils import *
-from abstention_reranker.eval_utils import *
-from abstention_reranker.plot_utils import *
+from abstention_reranker.utils import load_relevance_scores_datasets_from_local
+from abstention_reranker.eval_utils import evaluate_strategies_on_benchmark, compute_naucs
 import warnings
 warnings.filterwarnings('ignore')
 
