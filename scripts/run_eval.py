@@ -40,9 +40,12 @@ model_names = [
 ]
 
 # Store relevance scores datasets in all_data dictionary
+print('==========> Loading data...')
 all_data = load_relevance_scores_datasets_from_local(model_names, dataset_names, path='../data')
+print('==========> Done.\n')
 
 # Evaluate abstention strategies on benchmark
+print('==========> Evaluating strategies...')
 strat_evals = evaluate_strategies_on_benchmark(
     all_data=all_data, 
     abstention_rates=np.linspace(0, 0.8, 9), 
@@ -52,8 +55,10 @@ strat_evals = evaluate_strategies_on_benchmark(
     methods=['max', 'std', '1-2', 'linreg', 'rf', 'mlp', 'logreg', 'mahalanobis'],
     random_seeds=np.arange(5)
 )
+print('==========> Done.\n')
 
 # Compute nAUCs
+print('==========> Computing nAUCs...')
 naucs = compute_naucs(
     strategy_evaluations=strat_evals, 
     abstention_rates=np.linspace(0, 0.8, 9),
@@ -62,6 +67,9 @@ naucs = compute_naucs(
     metric_names=['AP', 'NDCG', 'RR'],
     methods=['max', 'std', '1-2', 'linreg', 'rf', 'mlp', 'logreg', 'mahalanobis'],
 )
+print('==========> Done.\n')
 
 # Save eval results
+print('==========> Saving nAUCs...')
 naucs.to_csv('naucs.csv')
+print('==========> Done.')
