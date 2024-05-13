@@ -1,3 +1,7 @@
+import os 
+DIR_PATH = os.path.dirname(os.path.realpath('__file__'))
+import sys
+sys.path.append(DIR_PATH)
 import numpy as np
 from abstention_reranker.utils import *
 from abstention_reranker.abst_utils import *
