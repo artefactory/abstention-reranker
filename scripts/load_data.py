@@ -48,13 +48,13 @@ models = {
     ],
     'zh': [
         'infgrad/stella-mrl-large-zh-v3.5-1792d',
-        'TownsWu/PEG',
-        'aspire/acge_text_embedding'
+        'aspire/acge_text_embedding',
+        'thenlper/gte-large-zh'
     ],
     'fr': [
-        'OrdalieTech/Solon-embeddings-large-0.1',
         'manu/sentence_croissant_alpha_v0.4',
-        'manu/bge-m3-custom-fr'
+        'manu/bge-m3-custom-fr',
+        'sentence-transformers/sentence-t5-large'
     ]
 }
 
