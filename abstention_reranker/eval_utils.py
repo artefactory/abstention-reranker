@@ -194,7 +194,7 @@ def make_calibration_study(
     quantile_good=0.75,
     input_size=10,
     hidden_size=128,
-    num_iter=100, 
+    num_iter=500, 
     batch_size='full', 
     learning_rate=0.1
 ):
@@ -361,7 +361,7 @@ def make_domain_adaptation_study(
     quantile_good=0.75,
     input_size=10,
     hidden_size=128,
-    num_iter=100, 
+    num_iter=500, 
     batch_size=100, 
     learning_rate=0.1,
     seed=0
