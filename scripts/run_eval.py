@@ -1,7 +1,3 @@
-# import os 
-# DIR_PATH = os.path.dirname(os.path.realpath('__file__'))
-# import sys
-# sys.path.append(DIR_PATH)
 import numpy as np
 from abstention_reranker.utils import load_relevance_scores_datasets_from_local
 from abstention_reranker.eval_utils import evaluate_strategies_on_benchmark, compute_naucs
@@ -12,35 +8,35 @@ warnings.filterwarnings('ignore')
 # Model names and dataset names
 dataset_names = [
     'SciDocs', 
-    # 'AskUbuntu', 
-    # 'StackOverflow', 
-    # 'Alloprof', 
-    # 'CMedQAv1', 
-    # 'Mmarco'
+    'AskUbuntu', 
+    'StackOverflow', 
+    'Alloprof', 
+    'CMedQAv1', 
+    'Mmarco'
 ]
 model_names = [
     'ember-v1', 
-    # 'llm-embedder',
-    # 'bge-base-en-v1.5',
-    # 'bge-reranker-base',
-    # 'bge-reranker-large', 
-    # 'e5-small-v2', 
-    # 'e5-large-v2',
-    # 'multilingual-e5-small', 
-    # 'multilingual-e5-large',  
-    # 'msmarco-MiniLM-L6-cos-v5', 
-    # 'msmarco-distilbert-dot-v5',
-    # 'ms-marco-TinyBERT-L-2-v2', 
-    # 'ms-marco-MiniLM-L-6-v2', 
-    # 'stsb-TinyBERT-L-4',
-    # 'stsb-distilroberta-base', 
-    # 'multi-qa-distilbert-cos-v1', 
-    # 'multi-qa-MiniLM-L6-cos-v1',
-    # 'all-MiniLM-L6-v2', 
-    # 'all-distilroberta-v1',      
-    # 'all-mpnet-base-v2', 
-    # 'quora-distilroberta-base', 
-    # 'qnli-distilroberta-base'
+    'llm-embedder',
+    'bge-base-en-v1.5',
+    'bge-reranker-base',
+    'bge-reranker-large', 
+    'e5-small-v2', 
+    'e5-large-v2',
+    'multilingual-e5-small', 
+    'multilingual-e5-large',  
+    'msmarco-MiniLM-L6-cos-v5', 
+    'msmarco-distilbert-dot-v5',
+    'ms-marco-TinyBERT-L-2-v2', 
+    'ms-marco-MiniLM-L-6-v2', 
+    'stsb-TinyBERT-L-4',
+    'stsb-distilroberta-base', 
+    'multi-qa-distilbert-cos-v1', 
+    'multi-qa-MiniLM-L6-cos-v1',
+    'all-MiniLM-L6-v2', 
+    'all-distilroberta-v1',      
+    'all-mpnet-base-v2', 
+    'quora-distilroberta-base', 
+    'qnli-distilroberta-base'
 ]
 
 # Store relevance scores datasets in all_data dictionary
@@ -52,12 +48,9 @@ strat_evals = evaluate_strategies_on_benchmark(
     abstention_rates=np.linspace(0, 0.8, 9), 
     dataset_names=dataset_names,
     model_names=model_names,
-    # metric_names=['AP', 'NDCG', 'RR'],
-    metric_names=['AP'],
-    # methods=['max', 'std', '1-2', 'linreg', 'rf'],
-    methods=['mlp'],
-    # random_seeds=np.arange(5)
-    random_seeds=[0]
+    metric_names=['AP', 'NDCG', 'RR'],
+    methods=['max', 'std', '1-2', 'linreg', 'rf', 'mlp', 'logreg', 'mahalanobis'],
+    random_seeds=np.arange(5)
 )
 
 # Compute nAUCs
@@ -66,10 +59,8 @@ naucs = compute_naucs(
     abstention_rates=np.linspace(0, 0.8, 9),
     dataset_names=dataset_names,
     model_names=model_names,
-    # metric_names=['AP', 'NDCG', 'RR'],
-    metric_names=['AP'],
-    # methods=['max', 'std', '1-2', 'linreg', 'rf']
-    methods=['mlp']
+    metric_names=['AP', 'NDCG', 'RR'],
+    methods=['max', 'std', '1-2', 'linreg', 'rf', 'mlp', 'logreg', 'mahalanobis'],
 )
 
 # Save eval results
