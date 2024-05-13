@@ -1,9 +1,10 @@
+print('==========> Loading libraries...')
 import numpy as np
 from abstention_reranker.utils import load_relevance_scores_datasets_from_local
 from abstention_reranker.eval_utils import evaluate_strategies_on_benchmark, compute_naucs
 import warnings
 warnings.filterwarnings('ignore')
-
+print('==========> Done.\n')
 
 # Model names and dataset names
 dataset_names = [
