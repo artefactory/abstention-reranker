@@ -48,7 +48,7 @@ def evaluate_strategies_on_benchmark(
     quantile_good=0.75,
     input_size=10,
     hidden_size=128,
-    num_iter=100,
+    num_iter=500,
     batch_size='full',
     learning_rate=0.05,
     ref_subsample_size=None,
