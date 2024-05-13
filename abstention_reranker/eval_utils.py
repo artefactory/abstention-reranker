@@ -46,11 +46,13 @@ def evaluate_strategies_on_benchmark(
     alpha=0.1,
     quantile_bad=0.25,
     quantile_good=0.75,
+    input_size=10,
+    hidden_size=128,
     num_iter=100,
     batch_size='full',
-    learning_rate=0.1,
+    learning_rate=0.05,
     ref_subsample_size=None,
-):
+    ):
     strat_evals = {
         model_name: {
             dataset_name: {
@@ -65,8 +67,12 @@ def evaluate_strategies_on_benchmark(
         for model_name in model_names
     }
 
-    for model_name in model_names:
+    for k, model_name in enumerate(model_names):
+        print(f'{k+1}/{len(model_names)}:', model_name)
+        
         for dataset_name in dataset_names:
+            print('   -> ' + dataset_name)
+            
             rel_scores = all_data[model_name][dataset_name]["scores"]  # retrieve relevance scores
             targets = all_data[model_name][dataset_name]["targets"]  # retrieve targets
 
@@ -94,7 +100,8 @@ def evaluate_strategies_on_benchmark(
 
                     for method in methods:  # evaluate methods
                         conf_scorer = AbstentionReranker(
-                            method, metric, alpha, quantile_bad, quantile_good, num_iter, batch_size, learning_rate, seed
+                            method, metric, alpha, quantile_bad, quantile_good, 
+                            input_size, hidden_size, num_iter, batch_size, learning_rate, seed
                         )  # initialize confidence scorer
                         conf_scorer.get_scorer(rel_scores_ref, metrics_ref)  # fit scorer (when relevant)
                         conf_scores_test = conf_scorer.compute_confidence_scores(
@@ -185,6 +192,8 @@ def make_calibration_study(
     alpha=0.1,
     quantile_bad=0.25,
     quantile_good=0.75,
+    input_size=10,
+    hidden_size=128,
     num_iter=100, 
     batch_size='full', 
     learning_rate=0.1
@@ -202,7 +211,8 @@ def make_calibration_study(
 
         for method in methods:
             conf_scorer = AbstentionReranker(
-                method, metric, alpha, quantile_bad, quantile_good, num_iter, batch_size, learning_rate, seed
+                method, metric, alpha, quantile_bad, quantile_good, 
+                input_size, hidden_size, num_iter, batch_size, learning_rate, seed
             )  # initialize confidence scorer
             conf_scorer.get_scorer(rel_scores_ref, metrics_ref)  # fit scorer (when relevant)
             conf_scores_ref = conf_scorer.compute_confidence_scores(
@@ -349,6 +359,8 @@ def make_domain_adaptation_study(
     alpha=0.1,
     quantile_bad=0.25,
     quantile_good=0.75,
+    input_size=10,
+    hidden_size=128,
     num_iter=100, 
     batch_size=100, 
     learning_rate=0.1,
@@ -385,7 +397,8 @@ def make_domain_adaptation_study(
 
                     for method in methods:
                         conf_scorer = AbstentionReranker(
-                            method, metric, alpha, quantile_bad, quantile_good, num_iter, batch_size, learning_rate, seed
+                            method, metric, alpha, quantile_bad, quantile_good, 
+                            input_size, hidden_size, num_iter, batch_size, learning_rate, seed
                         )
                         conf_scorer.get_scorer(rel_scores_ref, metrics_ref)
                         conf_scores_test = conf_scorer.compute_confidence_scores(rel_scores_test)
