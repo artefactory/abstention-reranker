@@ -1,10 +1,10 @@
 # Abstention Reranker
 
-Reference article: "[Towards Trustworthy Reranking: A Simple yet Effective Abstention Mechanism](https://arxiv.org/pdf/2402.12997.pdf)".
+Reference article: "[Towards Trustworthy Reranking: A Simple yet Effective Abstention Mechanism](https://arxiv.org/pdf/2402.12997.pdf)" (TMLR, 09/2024).
 
 ## Abstract
 
-Neural Information Retrieval (NIR) has significantly improved upon heuristic-based IR systems, yet failures remain frequent, as the models used sometimes do not manage to retrieve documents relevant to the user's query. We address these challenges by proposing a lightweight abstention mechanism tailored for real-world constraints, with particular emphasis placed on the reranking phase. We introduce a protocol for evaluating abstention strategies in a black-box scenario, demonstrating their efficacy, especially with access to reference data. We provide code for replicating experiments and implementing abstention mechanisms, fostering wider adoption and application in diverse contexts.
+Neural Information Retrieval (NIR) has significantly improved upon heuristic-based Information Retrieval (IR) systems. Yet, failures remain frequent, the models used often being unable to retrieve documents relevant to the user's query. We address this challenge by proposing a lightweight abstention mechanism tailored for real-world constraints, with particular emphasis placed on the reranking phase. We introduce a protocol for evaluating abstention strategies in black-box scenarios (typically encountered when relying on API services), demonstrating their efficacy, and propose a simple yet effective data-driven mechanism. We provide open-source code for experiment replication and abstention implementation, fostering wider adoption and application in diverse contexts.
 
 ## Installation
 ```python
@@ -19,11 +19,11 @@ python scripts/run_on_datasets.py --config-path <path to config YML>
 
 ## Experiment replication
 
-See `/notebooks/plots.ipynb`.
+See [/notebooks/plots.ipynb](https://github.com/artefactory/abstention-reranker/blob/main/notebooks/plots.ipynb).
 
 ## Usage examples
 
-See `/notebooks/implem.ipynb`.
+See [/notebooks/implem.ipynb](https://github.com/artefactory/abstention-reranker/blob/main/notebooks/implem.ipynb).
 
 ## Reference
 
