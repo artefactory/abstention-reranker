@@ -1,6 +1,6 @@
 # Abstention Reranker
 
-Reference article: "[Towards Trustworthy Reranking: A Simple yet Effective Abstention Mechanism](https://arxiv.org/pdf/2402.12997.pdf)" (TMLR, 09/2024).
+Reference article: "[Towards Trustworthy Reranking: A Simple yet Effective Abstention Mechanism](https://arxiv.org/pdf/2402.12997.pdf)" (accepted at TMLR, 09/2024).
 
 ## Abstract
 
