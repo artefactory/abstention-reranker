@@ -62,7 +62,7 @@ def load_relevance_scores_datasets_from_hf(hf_path, dump_path):
     if not os.path.exists(dump_path):
         os.makedirs(dump_path, exist_ok=True)
 
-    for data in dataset["train"]:
+    for data in dataset["test"]:
         model_name = data["model_name"].split("/")[-1]
         dataset_path = data["dataset_path"].split("/")[-1]
 
