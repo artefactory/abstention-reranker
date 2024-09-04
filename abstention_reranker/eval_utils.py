@@ -47,6 +47,7 @@ def evaluate_strategies_on_benchmark(
     quantile_bad=0.25,
     quantile_good=0.75,
     ref_subsample_size=None,
+    progress=True
 ):
     strat_evals = {
         model_name: {
@@ -62,7 +63,13 @@ def evaluate_strategies_on_benchmark(
         for model_name in model_names
     }
 
-    for model_name in model_names:
+    if progress:
+        iterator = tqdm(model_names)
+    else:
+        iterator = model_names
+    
+    for model_name in iterator:
+        
         for dataset_name in dataset_names:
             rel_scores = all_data[model_name][dataset_name]["scores"]  # retrieve relevance scores
             targets = all_data[model_name][dataset_name]["targets"]  # retrieve targets
@@ -144,7 +151,7 @@ def evaluate_raw_performance_on_benchmark(all_data, dataset_names, model_names, 
     )
     raw_perf_df.index.name = "Model"
 
-    for model_name in model_names:
+    for model_name in tqdm(model_names):
         for dataset_name in dataset_names:
             rel_scores, targets = all_data[model_name][dataset_name].values()  # retrieve relevance scores and targets
 
@@ -189,7 +196,7 @@ def make_calibration_study(
     metrics = evaluate_instances(rel_scores, targets, metric)
 
     # Evaluate threshold and abstention calibration for various random seeds
-    for seed in random_seeds:
+    for seed in tqdm(random_seeds):
         rel_scores_ref, rel_scores_test, metrics_ref, metrics_test = train_test_split(
             rel_scores, metrics, test_size=test_size, random_state=seed
         )  # ref/test split
@@ -255,7 +262,7 @@ def make_ref_size_study(
     }
     ref_sizes = {dataset_name: np.zeros(len(ref_subsample_sizes)) for dataset_name in dataset_names}
 
-    for j, size in enumerate(ref_subsample_sizes):
+    for j, size in tqdm(list(enumerate(ref_subsample_sizes))):
         for i, seed in enumerate(random_seeds):
             strat_evals = evaluate_strategies_on_benchmark(
                 all_data,
@@ -270,6 +277,7 @@ def make_ref_size_study(
                 quantile_bad,
                 quantile_good,
                 size,
+                progress=False
             )
             naucs = compute_naucs(strat_evals, abstention_rates, dataset_names, [model_name], [metric], methods)
 
@@ -310,7 +318,7 @@ def make_runtime_study(model_path, dataset_path, conf_scorer, num_trials=100, se
     runtime_study = pd.DataFrame(0.0, index=range(num_trials), columns=["Relevance scores", "Confidence scores"])
     np.random.seed(seed)
 
-    for i in range(num_trials):
+    for i in tqdm(range(num_trials)):
         idx = np.random.randint(len(queries))
         q, pos, neg = queries[idx], positives[idx], negatives[idx]
         doc_emb = model.encode([doc for doc in (pos + neg)], normalize_embeddings=True)
@@ -346,7 +354,7 @@ def make_domain_adaptation_study(
 ):
     dom_adap_study = []
 
-    for dname_ref in dataset_names:
+    for dname_ref in tqdm(dataset_names):
         dom_adap_study_dat = {
             model_name: {
                 dname_test: {
